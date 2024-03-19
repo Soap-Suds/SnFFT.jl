@@ -17,13 +17,13 @@ function sn_fft(N::Int, SNF::Array{Float64, 1}, YOR::Array{Array{Array{SparseMat
 		return compute_fft(N, SNF, YOR, PT, C)
 	else #This is a modified version of Julia's pmap()
 		sFFT = Array(Array{Array{Float64, 2}, 1}, N)
-		RR_YOR = Array(RemoteRef, np)
-		RR_PT = Array(RemoteRef, np)
+		RR_YOR = Array(RemoteChannel, np)
+		RR_PT = Array(RemoteChannel, np)
 		for p = 1:np
 			if p != myid()
-				RR_YOR[p] = RemoteRef(p)
+				RR_YOR[p] = RemoteChannel(p)
 				put!(RR_YOR[p], YOR)
-				RR_PT[p] = RemoteRef(p)
+				RR_PT[p] = RemoteChannel(p)
 				put!(RR_PT[p], PT)
 			end
 		end
@@ -51,10 +51,10 @@ function sn_fft(N::Int, SNF::Array{Float64, 1}, YOR::Array{Array{Array{SparseMat
 		YORn = YOR[N]
 		NP = length(YORn)
 		PTn = PT[N]
-		RR_sFFT = Array(RemoteRef, np)
+		RR_sFFT = Array(RemoteChannel, np)
 		for p = 1:np
 			if p != myid()
-				RR_sFFT[p] = RemoteRef(p)
+				RR_sFFT[p] = RemoteChannel(p)
 				put!(RR_sFFT[p], sFFT)
 			end
 		end
@@ -110,7 +110,7 @@ function compute_fft(N::Int, SNF::Array{Float64, 1}, YOR::Array{Array{Array{Spar
 	return FFT
 end
 
-function compute_fft_remote(N::Int, SNF::Array{Float64, 1}, RR_YOR::RemoteRef, RR_PT::RemoteRef, C::Counter)
+function compute_fft_remote(N::Int, SNF::Array{Float64, 1}, RR_YOR::RemoteChannel, RR_PT::RemoteChannel, C::Counter)
 	YOR = fetch(RR_YOR)
 	PT = fetch(RR_PT)
 	FFT =  compute_fft(N, SNF, YOR, PT, C)
@@ -166,7 +166,7 @@ function fc(N::Int, YORnp::Array{SparseMatrixCSC, 1}, PTnp::Array{Int, 1}, sFFT:
 	return FC
 end
 	
-function fc_remote(N::Int, p::Int, RR_YOR::RemoteRef, RR_PT::RemoteRef, RR_sFFT::RemoteRef)
+function fc_remote(N::Int, p::Int, RR_YOR::RemoteChannel, RR_PT::RemoteChannel, RR_sFFT::RemoteChannel)
 	YOR = fetch(RR_YOR)
 	PT = fetch(RR_PT)	
 	sFFT = 	fetch(RR_sFFT) 
