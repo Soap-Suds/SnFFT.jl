@@ -1,3 +1,5 @@
+using Distributed
+
 # Parameters:
 #	N::Int
 #	- the problem size N
@@ -20,16 +22,16 @@ function sn_fft_bl(N::Int, K::Int, SNF::Array{Float64, 1}, YOR::Array{Array{Arra
 		return compute_fft_bl(N, K, SNF, YOR, PT, ZFI, Counter(1))
 	else 
 		sFFT = Array(Array{Array{Float64, 2}, 1}, N)
-		RR_YOR = Array(RemoteRef, np)
-		RR_PT = Array(RemoteRef, np)
-		RR_ZFI = Array(RemoteRef, np)
+		RR_YOR = Array(RemoteChannel, np)
+		RR_PT = Array(RemoteChannel, np)
+		RR_ZFI = Array(RemoteChannel, np)
 		for p = 1:np
 			if p != myid()
-				RR_YOR[p] = RemoteRef(p)
+				RR_YOR[p] = RemoteChannel(p)
 				put!(RR_YOR[p], YOR)
-				RR_PT[p] = RemoteRef(p)
+				RR_PT[p] = RemoteChannel(p)
 				put!(RR_PT[p], PT)
-				RR_ZFI[p] = RemoteRef(p)
+				RR_ZFI[p] = RemoteChannel(p)
 				put!(RR_ZFI[p], ZFI)
 			end
 		end
@@ -59,10 +61,10 @@ function sn_fft_bl(N::Int, K::Int, SNF::Array{Float64, 1}, YOR::Array{Array{Arra
 		PTn = PT[N]
 		ZFId = ZFI[N - 1]
 		np = nprocs()
-		RR_sFFT = Array(RemoteRef, np)
+		RR_sFFT = Array(RemoteChannel, np)
 		for p = 1:np
 			if p != myid()
-				RR_sFFT[p] = RemoteRef(p)
+				RR_sFFT[p] = RemoteChannel(p)
 				put!(RR_sFFT[p], sFFT)
 			end
 		end
@@ -123,7 +125,7 @@ function compute_fft_bl(N::Int, K::Int, SNF::Array{Float64, 1}, YOR::Array{Array
 	return FFT
 end
 
-function compute_fft_bl_remote(N::Int, K::Int, SNF::Array{Float64, 1}, RR_YOR::RemoteRef, RR_PT::RemoteRef, RR_ZFI::RemoteRef, C::Counter)
+function compute_fft_bl_remote(N::Int, K::Int, SNF::Array{Float64, 1}, RR_YOR::RemoteChannel, RR_PT::RemoteChannel, RR_ZFI::RemoteChannel, C::Counter)
 	YOR = fetch(RR_YOR)
 	PT = fetch(RR_PT)
 	ZFI = fetch(RR_ZFI)
@@ -202,7 +204,7 @@ function fc_bl(N::Int, YORnp::Array{SparseMatrixCSC, 1}, PTnp::Array{Int, 1}, sF
 	return FC
 end
 
-function fc_bl_remote(N::Int, p::Int, RR_YOR::RemoteRef, RR_PT::RemoteRef, RR_sFFT::RemoteRef, ZFId::Int)
+function fc_bl_remote(N::Int, p::Int, RR_YOR::RemoteChannel, RR_PT::RemoteChannel, RR_sFFT::RemoteChannel, ZFId::Int)
 	YOR = fetch(RR_YOR)
 	PT = fetch(RR_PT)	
 	sFFT = 	fetch(RR_sFFT)
