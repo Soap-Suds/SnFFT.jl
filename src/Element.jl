@@ -1,4 +1,3 @@
-add SparseArrays
 using SparseArrays
 
 # Let X be a Permutation of N
