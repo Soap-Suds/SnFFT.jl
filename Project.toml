@@ -1,1 +1,4 @@
-julia = 1.10
+name = "SnFFT"
+uuid = "8464ABA6-A220-0212-A889-00D861A5C3D3"
+version = "1.10"
+authors = ["Sud"]
