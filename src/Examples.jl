@@ -206,7 +206,7 @@ function example5(N::Int, SC::Float64)
 	#create a sparse function on Sn
 	SNF = rand(factorial(N))
 	L = 0
-	for(i = 1:length(SNF))
+	for i = 1:length(SNF)
 		if(SNF[i] < SC) #determine if the value will be zero
 			SNF[i] = 0.0
 		else #if non-zero, assign it a random value
