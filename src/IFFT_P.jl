@@ -1,3 +1,4 @@
+using Distributed
 # Parameters:
 #	N::Int
 #	- the problem size
@@ -22,19 +23,19 @@ function sn_ifft_p(N::Int, M::Int, FFT::Array{Array{Float64, 2}, 1}, YOR::Array{
 		return SNF
 	else
 		pSNFA = Array(Array{Float64, 1}, N)
-		RR_FFT = Array(RemoteRef, np)
-		RR_YOR = Array(RemoteRef, np)
-		RR_PT = Array(RemoteRef, np)
-		RR_ICI = Array(RemoteRef, np)
+		RR_FFT = Array(RemoteChannel, np)
+		RR_YOR = Array(RemoteChannel, np)
+		RR_PT = Array(RemoteChannel, np)
+		RR_ICI = Array(RemoteChannel, np)
 		for p = 1:np
 			if p != myid()
-				RR_FFT[p] = RemoteRef(p)
+				RR_FFT[p] = RemoteChannel(p)
 				put!(RR_FFT[p], FFT)
-				RR_YOR[p] = RemoteRef(p)
+				RR_YOR[p] = RemoteChannel(p)
 				put!(RR_YOR[p], YOR)
-				RR_PT[p] = RemoteRef(p)
+				RR_PT[p] = RemoteChannel(p)
 				put!(RR_PT[p], PT)
-				RR_ICI[p] = RemoteRef(p)
+				RR_ICI[p] = RemoteChannel(p)
 				put!(RR_ICI[p], ICI)
 			end
 		end
@@ -226,7 +227,7 @@ function compute_sifft_p(N::Int, n::Int, FFT::Array{Array{Float64, 2}, 1}, YOR::
 	return pSNF
 end
 
-function compute_sifft_p_remote(N::Int, n::Int, RR_FFT::RemoteRef, RR_YOR::RemoteRef, RR_PT::RemoteRef, RR_ICI::RemoteRef)
+function compute_sifft_p_remote(N::Int, n::Int, RR_FFT::RemoteChannel, RR_YOR::RemoteChannel, RR_PT::RemoteChannel, RR_ICI::RemoteChannel)
 	FFT = fetch(RR_FFT)
 	YOR = fetch(RR_YOR)
 	PT = fetch(RR_PT)
