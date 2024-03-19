@@ -1,3 +1,5 @@
+using Distributed
+
 # Parameters:
 #	N::Int
 #	- the problem size
