@@ -2,3 +2,6 @@ name = "SnFFT"
 uuid = "8464ABA6-A220-0212-A889-00D861A5C3D3"
 version = "1.10"
 authors = ["Sud"]
+
+[deps]
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
