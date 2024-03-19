@@ -1,3 +1,5 @@
+using SparseArrays
+
 # Let X be a Permutation of N
 #	X::Array{Int, 1}
 #	length(X) == N
