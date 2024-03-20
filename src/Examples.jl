@@ -101,7 +101,7 @@ end
 #Demonstrates how to put the values of a function on Sn in the order used to compute the FFT
 function example3()
 
-	PA = Array(Array{Int, 1}, 24) #Create an array to hold all of the permutations of 1,2,3,4
+	PA = Array{Array{Int, 1}, 24} #Create an array to hold all of the permutations of 1,2,3,4
 	PA[1] = [1,2,3,4]
 	PA[2] = [1,2,4,3]
 	PA[3] = [1,3,2,4]
