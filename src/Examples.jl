@@ -1,3 +1,5 @@
+#ARRAYS' DIMENSION AND LENGTH ARE NOT EQUAL
+
 #Finds the representation of a permutation for a particular partition
 function example1()
 	example1(5,[3, 2],[2,3,1,4,5])
@@ -100,8 +102,8 @@ end
 
 #Demonstrates how to put the values of a function on Sn in the order used to compute the FFT
 function example3()
-
-	PA = Array{Array{Int, 1}, 24} #Create an array to hold all of the permutations of 1,2,3,4
+	#PA = Array(Array{Int, 1}, 24) #Create an array to hold all of the permutations of 1,2,3,4
+	PA = Array{Array{Int,1}}(24) #Create an array to hold all of the permutations of 1,2,3,4 
 	PA[1] = [1,2,3,4]
 	PA[2] = [1,2,4,3]
 	PA[3] = [1,3,2,4]
@@ -127,7 +129,8 @@ function example3()
 	PA[23] = [4,3,1,2]
 	PA[24] = [4,3,2,1]
 
-	VA = Array(Float64, 24) #Create the values of the function on Sn
+	#VA = Array(Float64, 24) #Create the values of the function on Sn
+	VA = Array{Float64, 1}(24) #Create the values of the function on Sn
 	for i = 1:24
 		VA[i] = Float64(i)
 	end
@@ -214,8 +217,10 @@ function example5(N::Int, SC::Float64)
 			SNF[i] = 2 * rand()
 		end
 	end
-	sSNF = Array(Float64, L)
-	NZL = Array(Int, L)
+	#sSNF = Array(Float64, L)
+	sSNF = Array{Float64}(L)
+	#NZL = Array(Int, L)
+	NZL = Array{Int,1}(L)
 	index = 1
 	for i = 1:length(SNF)
 		if SNF[i] != 0.0
@@ -313,7 +318,8 @@ end
 function example7(N::Int, K::Int)
 
 	blSNF = 2 * rand(round(Int, factorial(N) / factorial(N - K)))
-	nSNF = Array(Float64, factorial(N))
+	#nSNF = Array(Float64, factorial(N))
+	nSNF = Array{Float64,1}(factorial(N))
 	index = 1
 	for i = 1:length(blSNF)
 		v = blSNF[i]
@@ -448,15 +454,18 @@ end
 function clustering_setup(C::Int64, S::Int, F::Float64, N::Int64)
 
 	#Construct the distribution Centers	
-	Centers = Array(Array{Int64, 1}, C)
+	#Centers = Array(Array{Int64, 1}, C)
+	Centers = Array{Array{Int64, 1}}(C)
 	for i = 1:C	
 		Centers[i] = sn_p(N)
 		println(Centers[i])
 	end
 
 	#Construct the Distributions
-	Permutations = Array(Array{Int64, 1}, C * S)
-	Distributions = Array(Array{Float64, 1}, C * S)
+	#Permutations = Array(Array{Int64, 1}, C * S)
+	Permutations = Array{Array{Int64, 1}}(C * S)
+	#Distributions = Array(Array{Float64, 1}, C * S)
+	Distributions = Array{Array{Float64, 1}}(C * S)
 	k = 1
 	for i = 1:C
 		center = Centers[i]
@@ -471,14 +480,16 @@ function clustering_setup(C::Int64, S::Int, F::Float64, N::Int64)
 	end 
 
 	#Calculate the Fourier Transforms
-	FTA = Array(Array{Array{Float64, 2}, 1}, C * S)
+	#FTA = Array(Array{Array{Float64, 2}, 1}, C * S)
+	FTA = Array{Array{Array{Float64, 2}, 1}}(C * S)
 	YOR, PT = yor(N)	
 	for i = 1:(C * S)
 		FTA[i] = sn_fft(N, Distributions[i], YOR, PT)
 		println("FFT ", i)
 	end
 
-	X = Array(Float64, C * S, factorial(N))
+	#X = Array(Float64, C * S, factorial(N))
+	X = Array{Float64,2}(C * S, factorial(N))
 	for c = 1:(C * S)
 		k = 1
 		FT = FTA[c]
@@ -511,7 +522,8 @@ function mallowsdistribution(P::Array{Int64, 1}, Gamma::Float64)
 	N = length(P)
 	N_F = factorial(N)
 	Q = preferencematrix(P)
-	MD = Array(Float64, N_F)
+	#MD = Array(Float64, N_F)
+	MD = Array{Float64}(N_F)
 	Gamma_neg = -1 * Gamma
 	V = (1 - exp(Gamma_neg)) ^ N
 	for j = 1:N
@@ -613,7 +625,8 @@ end
 function print_ys(YS::Array{Int, 1})
 	N = length(YS)
 	numRows = maximum(YS)
-	ST = Array(AbstractString, numRows)
+	#ST = Array(AbstractString, numRows)
+	ST = Array{AbstractString}(numRows)
 	IA = ones(Int, numRows)
 	for i = 1:numRows
 		ST[i] = ""
